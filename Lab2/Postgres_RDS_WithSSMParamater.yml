@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Description": "AWS CloudFormation Sample Template for creating an Amazon RDS DB instance: 
+  Sample template showing how to create a DB instance with Enhanced Monitoring enabled.
+
+Parameters:
+  DBInstanceIdentifier:
+    Default: mydbinstance
+    Description: My database instance
+    Type: String
+    MinLength: "1"
+    MaxLength: "63"
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+    ConstraintDescription: >-
+      Must begin with a letter and must not end with a hyphen or contain two
+      consecutive hyphens.
+  DBName:
+    Default: bendatabase
+    Description: My database created using CloudFormation
+    Type: String
+    MinLength: "1"
+    MaxLength: "64"
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+    ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
+
+  DBUsernameSSMParamaters:
+    NoEcho: "true"
+    Description: Username for Postgre MySQL database access
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/BenDataBase/Username/hidden"
+
+  DBPasswordWithSSMParamaters:
+    NoEcho: "true"
+    Description: Password MySQL database access
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "/Ben/Database/password"
+
+Resources:
+  MyDB:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceIdentifier: !Ref DBInstanceIdentifier
+      DBName: !Ref DBName
+      DBInstanceClass: db.t4g.micro # Instance type
+      AllocatedStorage: 20 # 20 GB of storage
+      Engine: Postgres
+      EngineVersion: "15.5" # PostgreSQL version
+      MasterUsername: !Ref DBUsernameSSMParamaters
+      MasterUserPassword: !Ref DBPasswordWithSSMParamaters
